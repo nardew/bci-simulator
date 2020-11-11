@@ -104,7 +104,7 @@ class BCI(object):
                 self.data[d[0]][coin]['volume_avg'] = v / self.running_avg_volume_period
 
     def run(self):
-        LOG.info(f"\nIndex period: {self.dates[0]} - {self.dates[-1]}")
+        LOG.info(f"\nSimulation period: {self.dates[0]} - {self.dates[-1]}")
 
         self.init_portfolio(self.initial_funds)
 
