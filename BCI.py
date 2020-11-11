@@ -110,7 +110,7 @@ class BCI(object):
 
         for (i, date) in zip(range(len(self.dates)), self.dates):
             if i == 0:
-                # do not rebalance the very first day since the result would be be equal to the initialized portfolio
+                # do not rebalance the very first day since the result would be equal to the initialized portfolio
                 continue
 
             # if rebalancing period is other than 0, then rebalance every (rebalancing period) days. Otherwise rebalance
@@ -118,53 +118,53 @@ class BCI(object):
             if (self.rebalancing_period > 0 and i % self.rebalancing_period == 0) or (self.rebalancing_period == 0 and date.split('-')[2] == '01'):
                 LOG.info(f"\nRebalancing {date}")
 
-                potential_coins = []
+                candidate_coins = []
 
-                # filter existing portfolio coins with average daily volume less than self.primary_usd_filtering current month
+                # filter out existing portfolio coins with average daily volume less than self.primary_usd_filtering over the current month
                 LOG.debug(f"\tPrimary filtering:")
                 for coin in [key for key, _ in self.portfolio.items()]:
                     LOG.debug(f"\t\t{coin}: value $: {self.data[date][coin]['volume_avg'] * self.data[date][coin]['price']:,} (average volume: {self.data[date][coin]['volume_avg']}, price: {self.data[date][coin]['price']})")
                     if self.data[date][coin]['volume_avg'] * self.data[date][coin]['price'] > self.primary_usd_filtering:
-                        potential_coins.append(coin)
+                        candidate_coins.append(coin)
 
-                LOG.debug(f"\t\tPreserved coins: {potential_coins}")
+                LOG.debug(f"\t\tPreserved coins: {candidate_coins}")
 
-                # filter all other coins with average daily volume less than self.secondary_usd_filtering current month
+                # filter out all other coins with average daily volume less than self.secondary_usd_filtering over the current month
                 LOG.debug(f"\tSecondary filtering:")
                 ranking = sorted(self.data[date].items(), key = lambda x: x[1]['cap'], reverse = True)
                 for rank in ranking:
-                    if rank[0] not in potential_coins:
+                    if rank[0] not in candidate_coins:
                         LOG.debug(f"\t\t{rank[0]}: value $: {rank[1]['volume_avg'] * rank[1]['price']:,} (average volume: {rank[1]['volume_avg']}, price: {rank[1]['price']})")
                         if rank[1]['volume_avg'] * rank[1]['price'] > self.secondary_usd_filtering:
-                            potential_coins.append(rank[0])
+                            candidate_coins.append(rank[0])
 
-                    if len(potential_coins) >= self.index_candidate_size:
+                    if len(candidate_coins) >= self.index_candidate_size:
                         break
 
-                LOG.debug(f"\tCandidate list: {potential_coins}")
+                LOG.debug(f"\tCandidate list: {candidate_coins}")
 
                 # if filtering leads to having not enough coins, then add even the ones not meeting volume criteria
-                if len(potential_coins) < self.index_candidate_size:
-                    potential_coins += [rank[0] for rank in ranking[:self.index_candidate_size]]
-                    potential_coins = list(set(potential_coins))
-                    LOG.info(f"Not enough candidates, adding additional ones despite not meeting volume criteria: {potential_coins}")
+                if len(candidate_coins) < self.index_candidate_size:
+                    candidate_coins += [rank[0] for rank in ranking[:self.index_candidate_size]]
+                    candidate_coins = list(set(candidate_coins))
+                    LOG.info(f"Not enough candidates, adding additional ones despite not meeting volume criteria: {candidate_coins}")
 
                 # order all new candidates by their capitalization
-                potential_coins = sorted(potential_coins, key = lambda x: self.data[date][x]['cap'], reverse = True)
+                candidate_coins = sorted(candidate_coins, key = lambda x: self.data[date][x]['cap'], reverse = True)
                 LOG.debug(f"\tSorted candidate list:")
-                LOG.debug("\n".join(map(lambda x: f"\t\t{x}:\t{self.data[date][x]['cap']:,}", potential_coins)))
+                LOG.debug("\n".join(map(lambda x: f"\t\t{x}:\t{self.data[date][x]['cap']:,}", candidate_coins)))
 
                 # add best X coins directly to the new portfolio
-                final_coins = potential_coins[:self.primary_candidate_size]
+                final_coins = candidate_coins[:self.primary_candidate_size]
 
                 # add next coins to the portfolio where coins in the current portfolio are prioritized even if having
                 # worse capitalization
-                for coin in potential_coins[self.primary_candidate_size:self.secondary_candidate_size]:
+                for coin in candidate_coins[self.primary_candidate_size:self.secondary_candidate_size]:
                     if coin in self.portfolio.keys() and len(final_coins) < self.index_size:
                         final_coins.append(coin)
 
-                # add remaning coins to reach index size
-                for coin in potential_coins[:self.index_candidate_size]:
+                # add remaning coins to reach the index size
+                for coin in candidate_coins[:self.index_candidate_size]:
                     if coin not in final_coins and len(final_coins) < self.index_size:
                         final_coins.append(coin)
                 LOG.info(f"\tIndex composition: {final_coins}")

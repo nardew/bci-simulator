@@ -1,4 +1,5 @@
 import logging
+import argparse
 
 from BCI import BCI
 
@@ -8,9 +9,48 @@ logger.addHandler(logging.StreamHandler())
 
 LOG = logging.getLogger(__name__)
 
+
+def parse_args() -> dict:
+    parser = argparse.ArgumentParser(description='Bitpanda Crypto Index Simulator')
+
+    parser.add_argument('--index', help = 'Size of the index', default = 5, type = int)
+    parser.add_argument('--rebalancing', help = 'Rebalancing period in days. If set to 0, rebalancing takes place on the first day of month', default = 0, type = int)
+    parser.add_argument('--fee', help = 'Transaction fees', default = 0.02, type = float)
+    parser.add_argument('--max-allocation', help = 'Maximum percentage allocation of a coin in the index', default = 0.35, type = float)
+    parser.add_argument('--volume-period', help = 'Running average volume period in days', default = 30, type = int)
+    parser.add_argument('--primary-volume-filter', help = 'USD amount for the 1st volume filtering', default = 600000, type = float)
+    parser.add_argument('--secondary-volume-filter', help = 'USD amount for the 2nd volume filtering', default = 1000000, type = float)
+    parser.add_argument('--candidates', help = 'Number of candidates for the index', default = 10, type = int)
+    parser.add_argument('--primary-candidates', help = 'Primary candidates size', default = 3, type = int)
+    parser.add_argument('--secondary-candidates', help = 'Secondary candidates size', default = 7, type = int)
+    parser.add_argument('--funds', help = 'Initial funds', default = 1000, type = float)
+    parser.add_argument('--input-file', help = 'JSON file with the input data', default = "./input_data.json")
+    parser.add_argument('--start-date', help = 'Start date in YYYY-MM-DD format. None for all dates', default = None)
+    parser.add_argument('--end-date', help = 'End date in YYYY-MM-DD format. None for all dates', default = None)
+
+    return vars(parser.parse_args())
+
+
 if __name__ == "__main__":
     LOG.info("Bitpanda Crypto Index Simulator")
 
-    bci = BCI(5, 0, 600000, 1000000, 0.35, 0.02, 30, 10, 3, 7, 1000, "input_data.json", start_dt = '2020-10-01')
-    #bci = BCI(10, 0, 600000, 1000000, 0.3, 0.002, 30, 20, 7, 13, 1000, "input_data.json", start_dt = '2016-07-01')
+    args = parse_args()
+
+    bci = BCI(
+        index_size = args['index'],
+        rebalancing_period = args['rebalancing'],
+        primary_usd_filtering = args['primary_volume_filter'],
+        secondary_usd_filtering = args['secondary_volume_filter'],
+        max_asset_allocation = args['max_allocation'],
+        fee = args['fee'],
+        running_avg_volume_period = args['volume_period'],
+        index_candidate_size = args['candidates'],
+        primary_candidate_size = args['primary_candidates'],
+        secondary_candidate_size = args['secondary_candidates'],
+        initial_funds = args['funds'],
+        input_file_name = args['input_file'],
+        start_dt = args['start_date'],
+        end_dt = args['end_date']
+    )
+
     bci.run()
