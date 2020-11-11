@@ -1,0 +1,2 @@
+cryptoxlib-aio
+pycoingecko
