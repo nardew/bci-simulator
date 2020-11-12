@@ -110,7 +110,7 @@ class BCI(object):
 
         for (i, date) in zip(range(len(self.dates)), self.dates):
             if i == 0:
-                # do not rebalance the very first day since the result would be equal to the initialized portfolio
+                # do not rebalance on the very first day since the result would be equal to the initialized portfolio
                 continue
 
             # if rebalancing period is other than 0, then rebalance every (rebalancing period) days. Otherwise rebalance

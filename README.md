@@ -89,8 +89,11 @@ Rebalancing 2020-11-01 // <= rebalancing occurs (there is only one in this examp
 	Original portfolio value: 1,129.57 // <= portfolio value for holding the original index without rebalancing (in case of a single rebalancing the values are naturally the same)
 
 Overall fee: 2.09
-
 ```
+
+### BCI vs. HODL
+
+Unfortunately, in every single simulation BCI5 and BCI10 underperformed compared to a simple holding of the original portfolio. There are several factors responsible for this, mainly strong correlation between BTC and other leading currencies and dilution of BTC holdings due to rebalancing despite its price outperforming other assets.
 
 ### Implemented BCI rules
 
