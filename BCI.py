@@ -138,7 +138,7 @@ class BCI(object):
                 # filter out all other coins with average daily volume less than self.secondary_usd_filtering over the current month
                 LOG.debug(f"\tSecondary filtering:")
                 ranking = sorted(self.data[date].items(), key = lambda x: x[1]['cap'], reverse = True)
-                for rank in ranking:
+                for rank in ranking[:self.index_candidate_size]:
                     if rank[0] not in candidate_coins:
                         LOG.debug(f"\t\t{rank[0]}: value $: {rank[1]['volume_avg'] * rank[1]['price']:,} (average volume: {rank[1]['volume_avg']}, price: {rank[1]['price']})")
                         if rank[1]['volume_avg'] * rank[1]['price'] > self.secondary_usd_filtering:
@@ -225,11 +225,8 @@ class BCI(object):
             value_baseline.append(sum([qty * self.data[date][coin]['price'] for coin, qty in self.orig_portfolio.items()]))
             value_index.append(sum([qty * self.data[date][coin]['price'] for coin, qty in self.portfolio.items()]))
 
-            #print(value_baseline[-1])
-            #print(value_index[-1])
-
-        LOG.info(f"\nBaseline portfolio value: {value_baseline[-1]}")
-        LOG.info(f"Index portfolio value: {value_index[-1]}")
+        LOG.info(f"\nBaseline portfolio value: {value_baseline[-1]:,}")
+        LOG.info(f"Index portfolio value: {value_index[-1]:,}")
         LOG.info(f"Fees: {self.overall_fee:,}")
 
         if self.graph is True:
@@ -284,16 +281,17 @@ class BCI(object):
 
     def plot_graph(self, value_baseline, value_index, graph_x_dates):
         plt.plot(self.dates, value_baseline, label = 'baseline', linewidth = 0.7)
-        plt.plot(self.dates, value_index, label = 'BCI5', linewidth = 0.7)
+        plt.plot(self.dates, value_index, label = f'BCI{self.index_size}', linewidth = 0.7)
 
         plt.xlabel('Date')
         plt.xticks(graph_x_dates, rotation = 45, fontsize = 6)
 
         plt.ylabel('Value (USD)')
 
-        plt.title(f'BCI5 {self.dates[0]} - {self.dates[-1]}')
+        plt.title(f'BCI{self.index_size} {self.dates[0]} - {self.dates[-1]}')
 
         plt.grid(linestyle = '--', linewidth = 0.5)
 
         plt.legend()
+        plt.savefig(f"index{self.index_size}_{self.dates[0]}_{self.dates[-1]}.svg", format = "svg")
         plt.show()

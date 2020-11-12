@@ -10,7 +10,7 @@ This simulator is highly configurable but it comes with readymade configuration 
 
 Calculation is performed based on the historical data provided in JSON format. The repository already contains a sample input file `input_data.json` which contains prices, market capitalizations and volumes of all cryptocurrencies since 01/01/2015 up to 01/11/2020 as published by `CoinGecko`.
 
-To summarize the results, given current and past cryptomarket conditions I do not see a benefit of investing into crypto indices <ins>at the moment</ins>. Unlike standard assets, crypto currencies are extremely correlated which defeats diversification. Furthermore, fat tail distribution implies that a few leading currencies drive performance of the index all the time. Based on several executions with various parameters you are always better off distributing initial funds into a few top currencies and sticking to them. More in the section with results. The index would be advantageous only in case of sudden uncorrelated crash of one of the top performers. If this is what you are trying to protect from, then index is the right thing for you.
+To summarize the results, given current and past cryptomarket conditions investing into crypto indices <ins>at the moment</ins> is questionable. Unlike standard assets, crypto currencies are extremely correlated which defeats diversification. Furthermore, fat tail distribution implies that a few leading currencies drive performance of the index all the time. Based on several executions with various parameters you are often better off distributing initial funds into a few top currencies and sticking to them. More in the section with results. The index would be advantageous in case of sudden uncorrelated crash of one of the top performers. If this is what you are trying to protect from, then index is the right thing for you.
 
 Disclaimer: I am by no means affiliated with bitpanda (though I have been their customer for a couple of years) and this project was developed for personal purposes. 
 
@@ -95,15 +95,57 @@ Overall fee: 2.09
 
 ### Results
 
-As already mentioned in the introduction, BCI5 and BCI10 underperformed in every single simulation compared to simply holding the original diverse top portfolio. There are several factors responsible for this, mainly strong correlation between BTC and other leading currencies and dilution of the few top performing coins due to rebalancing despite their price outperforming other assets.
 
-In the following paragraphs I provide performance of indices executed with different parameters and comparison with a diverse portfolio without rebalancing. Each simulation starts with $1000 and applies 2% fee. Shown values do not include fees.  
+As already mentioned in the introduction, BCI5 and BCI10's performance depends on the parameters and timeframe used. While it performs well when bought prior to 2017 bull run, it underperformes when entered later. There are several factors responsible for this, mainly strong correlation between BTC and other leading currencies and dilution of the few top performing coins due to rebalancing despite their price outperforming other assets.
+In the following paragraphs I provide performance of indices executed with different parameters and comparison with a diverse portfolio without rebalancing. Each simulation starts with $1000 and applies 2% fee. All values are shown without fees.  
 
-##### BCI5, 01/01/2015 - 01/11/2020
+##### BCI5, 01/01/2015 - 03/11/2020
 
-| baseline closing value | index closing value | fees |
+| baseline closing value | index closing value | rebalancing fees |
 | --- | --- | --- |
-| $496.83 | $409.55 | $18.47 |
+| $22,733.50 | $60,169.04 | $4,975.04 |
+
+![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/docu/images/index5_2015-01-01_2020-11-03.svg)
+
+##### BCI5, 01/01/2016 - 03/11/2020
+
+| baseline closing value | index closing value | rebalancing fees |
+| --- | --- | --- |
+| $68,984.27 | $78,541.85 | $6,468.85 |
+
+![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/docu/images/index5_2016-01-01_2020-11-03.svg)
+
+##### BCI5, 01/01/2017 - 03/11/2020
+
+| baseline closing value | index closing value | rebalancing fees |
+| --- | --- | --- |
+| $27,187.41 | $31,187.39 | $2,538.08 |
+
+![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/docu/images/index5_2017-01-01_2020-11-03.svg)
+
+##### BCI5, 01/01/2018 - 03/11/2020
+
+| baseline closing value | index closing value | rebalancing fees |
+
+![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/docu/images/index5_2018-01-01_2020-11-03.svg)
+| --- | --- | --- |
+| $496.83 | $400.19 | $19.55 |
+
+##### BCI5, 01/01/2019 - 03/11/2020
+
+| baseline closing value | index closing value | rebalancing fees |
+| --- | --- | --- |
+| $2,411.43 | $2,215.78 | $51.35 |
+
+![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/docu/images/index5_2019-01-01_2020-11-03.svg)
+
+##### BCI5, 01/01/2020 - 03/11/2020
+
+| baseline closing value | index closing value | rebalancing fees |
+| --- | --- | --- |
+| $2,019.78 | $1,971.94 | $24.00 |
+
+![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/docu/images/index5_2020-01-01_2020-11-03.svg)
 
 ### Implemented BCI rules
 
