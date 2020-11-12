@@ -32,7 +32,7 @@ def parse_args() -> dict:
     parser.add_argument('--input-file', help = 'JSON file with the input data', default = "./input_data.json")
     parser.add_argument('--start-date', help = 'Start date in YYYY-MM-DD format. None for all dates', default = None)
     parser.add_argument('--end-date', help = 'End date in YYYY-MM-DD format. None for all dates', default = None)
-    parser.add_argument('--graph', help = 'Save graph with results', action = 'store_true', default = False)
+    parser.add_argument('--graph', help = 'Display graph', action = 'store_true', default = False)
 
     return vars(parser.parse_args())
 

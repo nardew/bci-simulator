@@ -96,7 +96,7 @@ Overall fee: 2.09
 ### Results
 
 
-As already mentioned in the introduction, BCI5 and BCI10's performance depends on the parameters and timeframe used. While it performs well when bought prior to 2017 bull run, it underperformes when entered later. There are several factors responsible for this, mainly strong correlation between BTC and other leading currencies and dilution of the few top performing coins due to rebalancing despite their price outperforming other assets.
+As already mentioned in the introduction, BCI5 and BCI10's performance depends on the parameters and timeframe used. While it performs well when bought prior to the 2017 bull run, it underperformes when entered later. There are several factors responsible for this, mainly strong correlation between BTC and other leading currencies and dilution of the few top performing coins due to rebalancing despite their price outperforming other assets.
 In the following paragraphs I provide performance of indices executed with different parameters and comparison with a diverse portfolio without rebalancing. Each simulation starts with $1000 and applies 2% fee. All values are shown without fees.  
 
 #### BCI5, 01/01/2015 - 03/11/2020
@@ -105,7 +105,7 @@ In the following paragraphs I provide performance of indices executed with diffe
 | --- | --- | --- |
 | $22,733.50 | $60,169.04 | $4,975.04 |
 
-![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/docu/images/index5_2015-01-01_2020-11-03.svg)
+![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index5_2015-01-01_2020-11-03.svg)
 
 #### BCI5, 01/01/2016 - 03/11/2020
 
@@ -113,7 +113,7 @@ In the following paragraphs I provide performance of indices executed with diffe
 | --- | --- | --- |
 | $68,984.27 | $78,541.85 | $6,468.85 |
 
-![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/docu/images/index5_2016-01-01_2020-11-03.svg)
+![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index5_2016-01-01_2020-11-03.svg)
 
 #### BCI5, 01/01/2017 - 03/11/2020
 
@@ -121,7 +121,7 @@ In the following paragraphs I provide performance of indices executed with diffe
 | --- | --- | --- |
 | $27,187.41 | $31,187.39 | $2,538.08 |
 
-![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/docu/images/index5_2017-01-01_2020-11-03.svg)
+![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index5_2017-01-01_2020-11-03.svg)
 
 #### BCI5, 01/01/2018 - 03/11/2020
 
@@ -129,7 +129,7 @@ In the following paragraphs I provide performance of indices executed with diffe
 | --- | --- | --- |
 | $496.83 | $400.19 | $19.55 |
 
-![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/docu/images/index5_2018-01-01_2020-11-03.svg)
+![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index5_2018-01-01_2020-11-03.svg)
 
 #### BCI5, 01/01/2019 - 03/11/2020
 
@@ -137,7 +137,7 @@ In the following paragraphs I provide performance of indices executed with diffe
 | --- | --- | --- |
 | $2,411.43 | $2,215.78 | $51.35 |
 
-![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/docu/images/index5_2019-01-01_2020-11-03.svg)
+![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index5_2019-01-01_2020-11-03.svg)
 
 #### BCI5, 01/01/2020 - 03/11/2020
 
@@ -145,7 +145,7 @@ In the following paragraphs I provide performance of indices executed with diffe
 | --- | --- | --- |
 | $2,019.78 | $1,971.94 | $24.00 |
 
-![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/docu/images/index10_2020-01-01_2020-11-03.svg)
+![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index5_2020-01-01_2020-11-03.svg)
 
 #### BCI10, 01/01/2015 - 03/11/2020
 
@@ -153,7 +153,7 @@ In the following paragraphs I provide performance of indices executed with diffe
 | --- | --- | --- |
 | $23,195.13 | $47,634.00 | $4,464.40 |
 
-![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/docu/images/index10_2015-01-01_2020-11-03.svg)
+![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index10_2015-01-01_2020-11-03.svg)
 
 #### BCI10, 01/01/2016 - 03/11/2020
 
@@ -161,7 +161,7 @@ In the following paragraphs I provide performance of indices executed with diffe
 | --- | --- | --- |
 | $69,289.64 | $64,954.50 | $6,061.99 |
 
-![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/docu/images/index10_2016-01-01_2020-11-03.svg)
+![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index10_2016-01-01_2020-11-03.svg)
 
 #### BCI10, 01/01/2017 - 03/11/2020
 
@@ -169,7 +169,7 @@ In the following paragraphs I provide performance of indices executed with diffe
 | --- | --- | --- |
 | $24,496.33 | $27,106.29 | $2,496.05 |
 
-![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/docu/images/index10_2017-01-01_2020-11-03.svg)
+![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index10_2017-01-01_2020-11-03.svg)
 
 #### BCI10, 01/01/2018 - 03/11/2020
 
@@ -177,7 +177,7 @@ In the following paragraphs I provide performance of indices executed with diffe
 | --- | --- | --- |
 | $451.55 | $352.14 | $18.47 |
 
-![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/docu/images/index10_2018-01-01_2020-11-03.svg)
+![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index10_2018-01-01_2020-11-03.svg)
 
 #### BCI10, 01/01/2019 - 03/11/2020
 
@@ -185,7 +185,7 @@ In the following paragraphs I provide performance of indices executed with diffe
 | --- | --- | --- |
 | $2,292.90 | $2,111.58 | $47.83 |
 
-![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/docu/images/index10_2019-01-01_2020-11-03.svg)
+![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index10_2019-01-01_2020-11-03.svg)
 
 #### BCI10, 01/01/2020 - 03/11/2020
 
@@ -193,9 +193,18 @@ In the following paragraphs I provide performance of indices executed with diffe
 | --- | --- | --- |
 | $1,963.38 | $1,936.60 | $27.07 |
 
-![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/docu/images/index10_2020-01-01_2020-11-03.svg)
+![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index10_2020-01-01_2020-11-03.svg)
 
 ### Implemented BCI rules
+
+To verify the correct methodology was used to simulate `BCI` indices, hereunder the implemented rebalancing rules are outlined. In particular, `BCI5` is used for illustration.
+
+- put all currencies from the current index with average daily volume >= $600,000 over past 30 days into the list of index candidates 
+- put remaining currencies ordered by market capitalization with average daily volume >= $1,000,000 over past 30 days into the list of index candidates
+- put top three currencies from the candidate list into the final index
+- put additional two currencies from the candidate list such that currencies from the existing index placed up to the 7th place have priority
+- normalize weights according to the market capitalization
+- cap allocation to 35% and renormalize (the step can be performed several times)
 
 ### Parameter description
 
