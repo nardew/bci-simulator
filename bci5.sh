@@ -14,4 +14,4 @@ python bci-simulator.py \
 --funds 1000 \
 --input-file "input_data.json" \
 --start-date "2018-01-01" \
---end-date "2020-04-02" \
+
