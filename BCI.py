@@ -108,6 +108,8 @@ class BCI(object):
 
         self.init_portfolio(self.initial_funds)
 
+        prev_perc_allocation = None
+
         for (i, date) in zip(range(len(self.dates)), self.dates):
             if i == 0:
                 # do not rebalance on the very first day since the result would be equal to the initialized portfolio
@@ -117,6 +119,8 @@ class BCI(object):
             # on the first day of month
             if (self.rebalancing_period > 0 and i % self.rebalancing_period == 0) or (self.rebalancing_period == 0 and date.split('-')[2] == '01'):
                 LOG.info(f"\nRebalancing {date}")
+
+                portfolio_sum = sum([qty * self.data[date][coin]['price'] for coin, qty in self.portfolio.items()])
 
                 candidate_coins = []
 
@@ -147,7 +151,7 @@ class BCI(object):
                 if len(candidate_coins) < self.index_candidate_size:
                     candidate_coins += [rank[0] for rank in ranking[:self.index_candidate_size]]
                     candidate_coins = list(set(candidate_coins))
-                    LOG.info(f"Not enough candidates, adding additional ones despite not meeting volume criteria: {candidate_coins}")
+                    LOG.info(f"\tNot enough candidates, adding additional ones despite not meeting volume criteria: {candidate_coins}")
 
                 # order all new candidates by their capitalization
                 candidate_coins = sorted(candidate_coins, key = lambda x: self.data[date][x]['cap'], reverse = True)
@@ -173,16 +177,58 @@ class BCI(object):
                 ranking = []
                 for coin in final_coins:
                     ranking.append((coin, self.data[date][coin]))
-                perc_cap = self.calc_portfolio_percentage(ranking)
+                perc_allocation = self.calc_portfolio_percentage(ranking, self.max_asset_allocation)
 
-                # cap allocation
                 LOG.debug(f"\tCapped percentage allocation:")
-                LOG.debug("\n".join(map(lambda x: f"\t\t{x}", perc_cap)))
+                LOG.debug("\n".join(map(lambda x: f"\t\t{x}", perc_allocation)))
+
+                if prev_perc_allocation is not None:
+                    preserve = []
+                    for [coin, perc] in perc_allocation:
+                        for [coin2, perc2] in prev_perc_allocation:
+                            if coin == coin2:
+                                if abs(perc - perc2) < 0.015:
+                                    preserve.append(coin)
+                                break
+
+                    if 0 < len(preserve) < self.index_size:
+                        redistribute = set(final_coins) - set(preserve)
+                        print(f"Coins to redistribute: {redistribute}")
+                        ranking = []
+                        for coin in redistribute:
+                            ranking.append((coin, self.data[date][coin]))
+
+                        portfolio_sum = sum([qty * self.data[date][coin]['price'] for coin, qty in self.portfolio.items()])
+                        max_usd_alloc = portfolio_sum * self.max_asset_allocation
+
+                        sum_to_redistribute = portfolio_sum - sum(
+                            [qty * self.data[date][coin]['price'] if coin in preserve else 0 for coin, qty in self.portfolio.items()])
+                        print(sum_to_redistribute)
+
+                        max_usd_alloc_redistr = max_usd_alloc / sum_to_redistribute
+                        print(max_usd_alloc_redistr)
+
+                        perc_allocation2 = self.calc_portfolio_percentage(ranking, max(max_usd_alloc_redistr, 1.0 / len(redistribute)))
+
+                        new_portfolio = {coin: self.portfolio[coin] for coin in preserve}
+                        print(new_portfolio)
+                        new_portfolio.update({coin[0]: sum_to_redistribute * coin[1] / self.data[date][coin[0]]['price'] for coin in perc_allocation2})
+                        print(new_portfolio)
+                    elif len(preserve) == self.index_size:
+                        new_portfolio = self.portfolio
+                    else:
+                        new_portfolio = {coin[0]: portfolio_sum * coin[1] / self.data[date][coin[0]]['price'] for coin
+                                         in perc_allocation}
+                else:
+                    new_portfolio = {coin[0]: portfolio_sum * coin[1] / self.data[date][coin[0]]['price'] for coin
+                                     in perc_allocation}
+
+                prev_perc_allocation = list(perc_allocation)
 
                 # calculate USD value of the current portfolio and then distribute it into the new portfolio
                 # based on the calculated percentage
-                portfolio_sum = sum([qty * self.data[date][coin]['price'] for coin, qty in self.portfolio.items()])
-                new_portfolio = {coin[0]: portfolio_sum * coin[1] / self.data[date][coin[0]]['price'] for coin in perc_cap}
+
+
                 LOG.info(f"\tNew portfolio allocation: {new_portfolio}")
                 LOG.info(f"\tPortfolio value: {portfolio_sum:,}")
 
@@ -198,6 +244,9 @@ class BCI(object):
                         diff[coin] = 0 - self.portfolio[coin]
 
                 LOG.info(f"\tPortfolio updates: {diff}")
+
+                diff_usd = {coin: self.data[date][coin]['price'] * qty for coin, qty in diff.items()}
+                LOG.info(f"\tDiff usd: {diff_usd}")
 
                 # calculate fee for the bought/sold coins
                 diff_usd = {coin: abs(qty * self.data[date][coin]['price']) * self.fee for coin, qty in diff.items()}
@@ -224,7 +273,7 @@ class BCI(object):
         LOG.debug("\n".join(map(lambda x: f"\t\t{x}", ranking)))
 
         # calculate percentage distribution according to the capitalization
-        perc_cap = self.calc_portfolio_percentage(ranking)
+        perc_cap = self.calc_portfolio_percentage(ranking, self.max_asset_allocation)
 
         LOG.debug(f"\tCapped percentage allocation:")
         LOG.debug("\n".join(map(lambda x: f"\t\t{x}", perc_cap)))
@@ -236,7 +285,7 @@ class BCI(object):
         # store initial portfolio for sake of performane comparison later on
         self.orig_portfolio = dict(self.portfolio)
 
-    def calc_portfolio_percentage(self, ranking):
+    def calc_portfolio_percentage(self, ranking, max_allocation):
         # normalize percentage allocation according to the capitalization
         sum_cap = sum(coin[1]['cap'] for coin in ranking)
         perc_cap = [[coin[0], coin[1]['cap'] / sum_cap] for coin in ranking]
@@ -246,9 +295,9 @@ class BCI(object):
 
         # cap percentage allocation at the selected maximum level
         for i in range(len(perc_cap)):
-            if perc_cap[i][1] > self.max_asset_allocation:
-                surplus = perc_cap[i][1] - self.max_asset_allocation
-                perc_cap[i][1] = self.max_asset_allocation
+            if perc_cap[i][1] > max_allocation:
+                surplus = perc_cap[i][1] - max_allocation
+                perc_cap[i][1] = max_allocation
 
                 s = sum(coin[1] for coin in perc_cap[i + 1:])
                 perc_cap[i + 1:] = map(lambda x: [x[0], x[1] + surplus / (s / x[1])], perc_cap[i + 1:])

@@ -1,11 +1,12 @@
 import logging
+import sys
 import argparse
 
 from BCI import BCI
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
-logger.addHandler(logging.StreamHandler())
+logger.addHandler(logging.StreamHandler(sys.stdout))
 
 LOG = logging.getLogger(__name__)
 
