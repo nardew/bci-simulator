@@ -13,4 +13,5 @@ python bci-simulator.py \
 --secondary-candidates 13 \
 --funds 1000 \
 --input-file "input_data.json" \
---start-date "2018-01-01" \
+--start-date "2020-01-01" \
+--graph
