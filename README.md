@@ -10,7 +10,9 @@ This simulator is highly configurable but it comes with readymade configuration 
 
 Calculation is performed based on the historical data provided in JSON format. The repository already contains a sample input file `input_data.json` which contains prices, market capitalizations and volumes of all cryptocurrencies since 01/01/2015 up to 01/11/2020 as published by `CoinGecko`.
 
-Disclaimer: I am by no means affiliated with bitpanda (though I have been their customer for a couple of years) and this project was developed for own purposes. 
+To summarize the results, given current and past cryptomarket conditions I do not see a benefit of investing into crypto indices <ins>at the moment</ins>. Unlike standard assets, crypto currencies are extremely correlated which defeats diversification. Furthermore, fat tail distribution implies that a few leading currencies drive performance of the index all the time. Based on several executions with various parameters you are always better off distributing initial funds into a few top currencies and sticking to them. More in the section with results. The index would be advantageous only in case of sudden uncorrelated crash of one of the top performers. If this is what you are trying to protect from, then index is right thing for you.
+
+Disclaimer: I am by no means affiliated with bitpanda (though I have been their customer for a couple of years) and this project was developed for personal purposes. 
 
 ### Example
 
@@ -91,9 +93,13 @@ Rebalancing 2020-11-01 // <= rebalancing occurs (there is only one in this examp
 Overall fee: 2.09
 ```
 
-### BCI vs. HODL
+### Results
 
-Unfortunately, in every single simulation BCI5 and BCI10 underperformed compared to a simple holding of the original portfolio. There are several factors responsible for this, mainly strong correlation between BTC and other leading currencies and dilution of BTC holdings due to rebalancing despite its price outperforming other assets.
+As already mentioned in the introduction, BCI5 and BCI10 underperformed in every single simulation compared to simply holding the original diverse top portfolio. There are several factors responsible for this, mainly strong correlation between BTC and other leading currencies and dilution of the few top performing coins due to rebalancing despite their price outperforming other assets.
+
+In the following paragraphs I provide performance of indices executed with different parameters and comparison with keeping a diverse portfolio without rebalancing.  
+
+##### BCI5, 01/01/2015 - 01/11/2020
 
 ### Implemented BCI rules
 

@@ -204,7 +204,7 @@ class BCI(object):
                 LOG.info(f"\tPortfolio updates: {diff}")
 
                 diff_usd = {coin: self.data[date][coin]['price'] * qty for coin, qty in diff.items()}
-                LOG.info(f"\tDiff usd: {diff_usd}")
+                LOG.info(f"\tPortfolio USD updates: {diff_usd}")
 
                 # calculate fee for the bought/sold coins
                 diff_usd = {coin: abs(qty * self.data[date][coin]['price']) * self.fee for coin, qty in diff.items()}
