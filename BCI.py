@@ -2,6 +2,8 @@ from typing import Dict
 import json
 import logging
 
+import matplotlib.pyplot as plt
+
 LOG = logging.getLogger(__name__)
 
 
@@ -20,7 +22,8 @@ class BCI(object):
                  initial_funds: float,
                  input_file_name: str,
                  start_dt: str = None,
-                 end_dt: str = None):
+                 end_dt: str = None,
+                 graph: bool = False):
         self.index_size = index_size
         self.rebalancing_period = rebalancing_period
         self.primary_usd_filtering = primary_usd_filtering
@@ -32,6 +35,7 @@ class BCI(object):
         self.primary_candidate_size = primary_candidate_size
         self.secondary_candidate_size = secondary_candidate_size
         self.initial_funds = initial_funds
+        self.graph = graph
 
         self.portfolio: Dict = {}
         self.orig_portfolio: Dict = {}
@@ -108,17 +112,17 @@ class BCI(object):
 
         self.init_portfolio(self.initial_funds)
 
-        prev_perc_allocation = None
-
+        value_baseline = []
+        value_index = []
+        graph_x_dates = []
         for (i, date) in zip(range(len(self.dates)), self.dates):
-            if i == 0:
-                # do not rebalance on the very first day since the result would be equal to the initialized portfolio
-                continue
-
             # if rebalancing period is other than 0, then rebalance every (rebalancing period) days. Otherwise rebalance
-            # on the first day of month
-            if (self.rebalancing_period > 0 and i % self.rebalancing_period == 0) or (self.rebalancing_period == 0 and date.split('-')[2] == '01'):
+            # on the first day of month. Do not rebalance on the very first day since the result would be equal to the initialized portfolio
+            [year, month, day] = date.split('-')
+            if i != 0 and ((self.rebalancing_period > 0 and i % self.rebalancing_period == 0) or (self.rebalancing_period == 0 and day == '01')):
                 LOG.info(f"\nRebalancing {date}")
+                if day == '01' and int(month) % 3 == 0:
+                    graph_x_dates.append(date)
 
                 candidate_coins = []
 
@@ -216,9 +220,20 @@ class BCI(object):
 
                 # display value of the original portfolio with current prices
                 orig_portfolio_value = sum([qty * self.data[date][coin]['price'] for coin, qty in self.orig_portfolio.items()])
-                LOG.info(f"\tOriginal portfolio value: {orig_portfolio_value:,}")
+                LOG.info(f"\tBaseline portfolio value: {orig_portfolio_value:,}")
 
-        LOG.info(f"\nOverall fee: {self.overall_fee:,}")
+            value_baseline.append(sum([qty * self.data[date][coin]['price'] for coin, qty in self.orig_portfolio.items()]))
+            value_index.append(sum([qty * self.data[date][coin]['price'] for coin, qty in self.portfolio.items()]))
+
+            #print(value_baseline[-1])
+            #print(value_index[-1])
+
+        LOG.info(f"\nBaseline portfolio value: {value_baseline[-1]}")
+        LOG.info(f"Index portfolio value: {value_index[-1]}")
+        LOG.info(f"Fees: {self.overall_fee:,}")
+
+        if self.graph is True:
+            self.plot_graph(value_baseline, value_index, graph_x_dates)
 
     def init_portfolio(self, funds: float):
         LOG.debug(f"\nInitializing portfolio for ${funds}...")
@@ -266,3 +281,19 @@ class BCI(object):
                 break
 
         return perc_cap
+
+    def plot_graph(self, value_baseline, value_index, graph_x_dates):
+        plt.plot(self.dates, value_baseline, label = 'baseline', linewidth = 0.7)
+        plt.plot(self.dates, value_index, label = 'BCI5', linewidth = 0.7)
+
+        plt.xlabel('Date')
+        plt.xticks(graph_x_dates, rotation = 45, fontsize = 6)
+
+        plt.ylabel('Value (USD)')
+
+        plt.title(f'BCI5 {self.dates[0]} - {self.dates[-1]}')
+
+        plt.grid(linestyle = '--', linewidth = 0.5)
+
+        plt.legend()
+        plt.show()

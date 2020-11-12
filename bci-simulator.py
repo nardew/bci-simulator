@@ -4,6 +4,10 @@ import argparse
 
 from BCI import BCI
 
+logger = logging.getLogger('matplotlib')
+logger.setLevel(logging.WARN)
+logger.addHandler(logging.StreamHandler(sys.stdout))
+
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.StreamHandler(sys.stdout))
@@ -28,6 +32,7 @@ def parse_args() -> dict:
     parser.add_argument('--input-file', help = 'JSON file with the input data', default = "./input_data.json")
     parser.add_argument('--start-date', help = 'Start date in YYYY-MM-DD format. None for all dates', default = None)
     parser.add_argument('--end-date', help = 'End date in YYYY-MM-DD format. None for all dates', default = None)
+    parser.add_argument('--graph', help = 'Save graph with results', action = 'store_true', default = False)
 
     return vars(parser.parse_args())
 
@@ -51,7 +56,8 @@ if __name__ == "__main__":
         initial_funds = args['funds'],
         input_file_name = args['input_file'],
         start_dt = args['start_date'],
-        end_dt = args['end_date']
+        end_dt = args['end_date'],
+        graph = args['graph']
     )
 
     bci.run()
