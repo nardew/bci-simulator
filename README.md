@@ -1,6 +1,6 @@
 # Bitpanda Crypto Index Simulator
 
-#### · [Results](#results) · [Example](#example) · [BCI rules](#implemented bci rules) · [Parameters](#parameters) · [Support](#support) · 
+#### · [Results](#results) · [Example](#example) · [BCI rules](#implementedbcirules) · [Parameters](#parameters) · [Support](#support) · 
 
 ---
 
@@ -141,7 +141,7 @@ To verify the correct methodology was used to simulate `BCI` indices, hereunder 
 - normalize weights according to the market capitalization
 - cap allocation to 35% and renormalize (the step can be performed several times)
 
-### Parametera
+### Parameters
 
 If you want to try your own simulation with custom parameters, below description of configurable arguments may come in handy.
 
