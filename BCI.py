@@ -2,6 +2,8 @@ from typing import Dict
 import json
 import logging
 
+import matplotlib.pyplot as plt
+
 LOG = logging.getLogger(__name__)
 
 
@@ -20,7 +22,8 @@ class BCI(object):
                  initial_funds: float,
                  input_file_name: str,
                  start_dt: str = None,
-                 end_dt: str = None):
+                 end_dt: str = None,
+                 graph: bool = False):
         self.index_size = index_size
         self.rebalancing_period = rebalancing_period
         self.primary_usd_filtering = primary_usd_filtering
@@ -32,6 +35,7 @@ class BCI(object):
         self.primary_candidate_size = primary_candidate_size
         self.secondary_candidate_size = secondary_candidate_size
         self.initial_funds = initial_funds
+        self.graph = graph
 
         self.portfolio: Dict = {}
         self.orig_portfolio: Dict = {}
@@ -104,19 +108,21 @@ class BCI(object):
                 self.data[d[0]][coin]['volume_avg'] = v / self.running_avg_volume_period
 
     def run(self):
-        LOG.info(f"\nIndex period: {self.dates[0]} - {self.dates[-1]}")
+        LOG.info(f"\nSimulation period: {self.dates[0]} - {self.dates[-1]}")
 
         self.init_portfolio(self.initial_funds)
 
+        value_baseline = []
+        value_index = []
+        graph_x_dates = []
         for (i, date) in zip(range(len(self.dates)), self.dates):
-            if i == 0:
-                # do not rebalance the very first day since the result would be equal to the initialized portfolio
-                continue
-
             # if rebalancing period is other than 0, then rebalance every (rebalancing period) days. Otherwise rebalance
-            # on the first day of month
-            if (self.rebalancing_period > 0 and i % self.rebalancing_period == 0) or (self.rebalancing_period == 0 and date.split('-')[2] == '01'):
+            # on the first day of month. Do not rebalance on the very first day since the result would be equal to the initialized portfolio
+            [year, month, day] = date.split('-')
+            if i != 0 and ((self.rebalancing_period > 0 and i % self.rebalancing_period == 0) or (self.rebalancing_period == 0 and day == '01')):
                 LOG.info(f"\nRebalancing {date}")
+                if day == '01' and int(month) % 3 == 0:
+                    graph_x_dates.append(date)
 
                 candidate_coins = []
 
@@ -132,7 +138,7 @@ class BCI(object):
                 # filter out all other coins with average daily volume less than self.secondary_usd_filtering over the current month
                 LOG.debug(f"\tSecondary filtering:")
                 ranking = sorted(self.data[date].items(), key = lambda x: x[1]['cap'], reverse = True)
-                for rank in ranking:
+                for rank in ranking[:self.index_candidate_size]:
                     if rank[0] not in candidate_coins:
                         LOG.debug(f"\t\t{rank[0]}: value $: {rank[1]['volume_avg'] * rank[1]['price']:,} (average volume: {rank[1]['volume_avg']}, price: {rank[1]['price']})")
                         if rank[1]['volume_avg'] * rank[1]['price'] > self.secondary_usd_filtering:
@@ -147,7 +153,7 @@ class BCI(object):
                 if len(candidate_coins) < self.index_candidate_size:
                     candidate_coins += [rank[0] for rank in ranking[:self.index_candidate_size]]
                     candidate_coins = list(set(candidate_coins))
-                    LOG.info(f"Not enough candidates, adding additional ones despite not meeting volume criteria: {candidate_coins}")
+                    LOG.info(f"\tNot enough candidates, adding additional ones despite not meeting volume criteria: {candidate_coins}")
 
                 # order all new candidates by their capitalization
                 candidate_coins = sorted(candidate_coins, key = lambda x: self.data[date][x]['cap'], reverse = True)
@@ -173,17 +179,19 @@ class BCI(object):
                 ranking = []
                 for coin in final_coins:
                     ranking.append((coin, self.data[date][coin]))
-                perc_cap = self.calc_portfolio_percentage(ranking)
+                perc_allocation = self.calc_portfolio_percentage(ranking, self.max_asset_allocation)
 
-                # cap allocation
                 LOG.debug(f"\tCapped percentage allocation:")
-                LOG.debug("\n".join(map(lambda x: f"\t\t{x}", perc_cap)))
+                LOG.debug("\n".join(map(lambda x: f"\t\t{x}", perc_allocation)))
 
                 # calculate USD value of the current portfolio and then distribute it into the new portfolio
                 # based on the calculated percentage
                 portfolio_sum = sum([qty * self.data[date][coin]['price'] for coin, qty in self.portfolio.items()])
-                new_portfolio = {coin[0]: portfolio_sum * coin[1] / self.data[date][coin[0]]['price'] for coin in perc_cap}
+                new_portfolio = {coin[0]: portfolio_sum * coin[1] / self.data[date][coin[0]]['price'] for coin in perc_allocation}
+
                 LOG.info(f"\tNew portfolio allocation: {new_portfolio}")
+                new_portfolio_usd = {coin: qty * self.data[date][coin]['price'] for coin, qty in new_portfolio.items()}
+                LOG.info(f"\tNew portfolio USD allocation: {new_portfolio_usd}")
                 LOG.info(f"\tPortfolio value: {portfolio_sum:,}")
 
                 # for each coin in the old and new portfolio calculate the amount to be bought/sold
@@ -199,6 +207,9 @@ class BCI(object):
 
                 LOG.info(f"\tPortfolio updates: {diff}")
 
+                diff_usd = {coin: self.data[date][coin]['price'] * qty for coin, qty in diff.items()}
+                LOG.info(f"\tPortfolio USD updates: {diff_usd}")
+
                 # calculate fee for the bought/sold coins
                 diff_usd = {coin: abs(qty * self.data[date][coin]['price']) * self.fee for coin, qty in diff.items()}
                 fee = sum([usd for _, usd in diff_usd.items()])
@@ -209,9 +220,17 @@ class BCI(object):
 
                 # display value of the original portfolio with current prices
                 orig_portfolio_value = sum([qty * self.data[date][coin]['price'] for coin, qty in self.orig_portfolio.items()])
-                LOG.info(f"\tOriginal portfolio value: {orig_portfolio_value:,}")
+                LOG.info(f"\tBaseline portfolio value: {orig_portfolio_value:,}")
 
-        LOG.info(f"\nOverall fee: {self.overall_fee:,}")
+            value_baseline.append(sum([qty * self.data[date][coin]['price'] for coin, qty in self.orig_portfolio.items()]))
+            value_index.append(sum([qty * self.data[date][coin]['price'] for coin, qty in self.portfolio.items()]))
+
+        LOG.info(f"\nBaseline portfolio value: {value_baseline[-1]:,}")
+        LOG.info(f"Index portfolio value: {value_index[-1]:,}")
+        LOG.info(f"Fees: {self.overall_fee:,}")
+
+        if self.graph is True:
+            self.plot_graph(value_baseline, value_index, graph_x_dates)
 
     def init_portfolio(self, funds: float):
         LOG.debug(f"\nInitializing portfolio for ${funds}...")
@@ -224,7 +243,7 @@ class BCI(object):
         LOG.debug("\n".join(map(lambda x: f"\t\t{x}", ranking)))
 
         # calculate percentage distribution according to the capitalization
-        perc_cap = self.calc_portfolio_percentage(ranking)
+        perc_cap = self.calc_portfolio_percentage(ranking, self.max_asset_allocation)
 
         LOG.debug(f"\tCapped percentage allocation:")
         LOG.debug("\n".join(map(lambda x: f"\t\t{x}", perc_cap)))
@@ -233,10 +252,13 @@ class BCI(object):
         self.portfolio = {coin[0]: funds * coin[1] / self.data[self.dates[0]][coin[0]]['price'] for coin in perc_cap}
         LOG.info(f"Portfolio allocation: {self.portfolio}")
 
-        # store initial portfolio for sake of performane comparison later on
+        new_portfolio_usd = {coin: qty * self.data[self.dates[0]][coin]['price'] for coin, qty in self.portfolio.items()}
+        LOG.info(f"Portfolio USD allocation: {new_portfolio_usd}")
+
+        # store initial portfolio for sake of performance comparison later on
         self.orig_portfolio = dict(self.portfolio)
 
-    def calc_portfolio_percentage(self, ranking):
+    def calc_portfolio_percentage(self, ranking, max_allocation):
         # normalize percentage allocation according to the capitalization
         sum_cap = sum(coin[1]['cap'] for coin in ranking)
         perc_cap = [[coin[0], coin[1]['cap'] / sum_cap] for coin in ranking]
@@ -246,9 +268,9 @@ class BCI(object):
 
         # cap percentage allocation at the selected maximum level
         for i in range(len(perc_cap)):
-            if perc_cap[i][1] > self.max_asset_allocation:
-                surplus = perc_cap[i][1] - self.max_asset_allocation
-                perc_cap[i][1] = self.max_asset_allocation
+            if perc_cap[i][1] > max_allocation:
+                surplus = perc_cap[i][1] - max_allocation
+                perc_cap[i][1] = max_allocation
 
                 s = sum(coin[1] for coin in perc_cap[i + 1:])
                 perc_cap[i + 1:] = map(lambda x: [x[0], x[1] + surplus / (s / x[1])], perc_cap[i + 1:])
@@ -256,3 +278,20 @@ class BCI(object):
                 break
 
         return perc_cap
+
+    def plot_graph(self, value_baseline, value_index, graph_x_dates):
+        plt.plot(self.dates, value_baseline, label = 'baseline', linewidth = 0.7)
+        plt.plot(self.dates, value_index, label = f'BCI{self.index_size}', linewidth = 0.7)
+
+        plt.xlabel('Date')
+        plt.xticks(graph_x_dates, rotation = 45, fontsize = 6)
+
+        plt.ylabel('Value (USD)')
+
+        plt.title(f'BCI{self.index_size} {self.dates[0]} - {self.dates[-1]}')
+
+        plt.grid(linestyle = '--', linewidth = 0.5)
+
+        plt.legend()
+        plt.savefig(f"index{self.index_size}_{self.dates[0]}_{self.dates[-1]}.svg", format = "svg")
+        plt.show()

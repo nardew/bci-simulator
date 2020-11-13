@@ -1,2 +1,3 @@
 cryptoxlib-aio
 pycoingecko
+matplotlib
