@@ -34,18 +34,18 @@ In the following paragraphs I provide performance of indices executed with diffe
 | 01/01/2020 | 03/11/2020 | BCI5 | $2,019.78 | $1,971.94 | $24.00 |
 | 01/01/2020 | 03/11/2020 | BCI10 | $1,963.38 | $1,936.60 | $27.07 |
 
-![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index5_2015-01-01_2020-11-03.svg)
-![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index5_2016-01-01_2020-11-03.svg)
-![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index5_2017-01-01_2020-11-03.svg)
-![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index5_2018-01-01_2020-11-03.svg)
-![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index5_2019-01-01_2020-11-03.svg)
-![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index5_2020-01-01_2020-11-03.svg)
-![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index10_2015-01-01_2020-11-03.svg)
-![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index10_2016-01-01_2020-11-03.svg)
-![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index10_2017-01-01_2020-11-03.svg)
-![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index10_2018-01-01_2020-11-03.svg)
-![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index10_2019-01-01_2020-11-03.svg)
-![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index10_2020-01-01_2020-11-03.svg)
+![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/main/images/index5_2015-01-01_2020-11-03.svg)
+![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/main/images/index5_2016-01-01_2020-11-03.svg)
+![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/main/images/index5_2017-01-01_2020-11-03.svg)
+![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/main/images/index5_2018-01-01_2020-11-03.svg)
+![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/main/images/index5_2019-01-01_2020-11-03.svg)
+![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/main/images/index5_2020-01-01_2020-11-03.svg)
+![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/main/images/index10_2015-01-01_2020-11-03.svg)
+![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/main/images/index10_2016-01-01_2020-11-03.svg)
+![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/main/images/index10_2017-01-01_2020-11-03.svg)
+![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/main/images/index10_2018-01-01_2020-11-03.svg)
+![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/main/images/index10_2019-01-01_2020-11-03.svg)
+![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/main/images/index10_2020-01-01_2020-11-03.svg)
 
 ### Example
 
