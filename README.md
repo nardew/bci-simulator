@@ -1,6 +1,6 @@
 # Bitpanda Crypto Index Simulator
 
-#### · [Results](#results) · [Example](#example) · [BCI rules](#implementedbcirules) · [Parameters](#parameters) · [Support](#support) · 
+#### · [Results](#results) · [Example](#example) · [BCI rules](#implemented-bci-rules) · [Parameters](#parameters) · [Support](#support) · 
 
 ---
 
