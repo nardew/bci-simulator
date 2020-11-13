@@ -1,5 +1,9 @@
 # Bitpanda Crypto Index Simulator
 
+#### · [Results](#results) · [Example](#example) · [BCI rules](#implemented-bci-rules) · [Parameters](#parameters) · [Support](#support) · 
+
+---
+
 Bitpanda Crypto Index (BCI) is an index product offered by the Austrian crypto broker bitpanda. The index consits of preselected crypto assets based on their actual market capitalization and gets recalculated (rebalanced) monthly to reflect shifts in the market. For full description read the [prospectus](https://cdn.bitpanda.com/media/bci/Prospectus_Index_English.pdf).
 
 This package serves to simulate BCI calculation, determine its composition and perform monthly rebalancing based on the historical input data in order to calculate yield and compare it with the returns resulting from holding the original assets without any rebalancing. This may help decide whether investing in the index is profitable or at least help compare performance with different parameters.
@@ -135,9 +139,9 @@ To verify the correct methodology was used to simulate `BCI` indices, hereunder 
 - put top three currencies from the candidate list into the final index
 - put additional two currencies from the candidate list into the final index such that currencies from the existing index ranked up to the 7th place take priority
 - normalize weights according to the market capitalization
-- cap allocation to 35% and renormalize (the step can be performed several times)
+- cap allocation to 35% and renormalize (the step can be performed multiple times)
 
-### Parameter description
+### Parameters
 
 If you want to try your own simulation with custom parameters, below description of configurable arguments may come in handy.
 
