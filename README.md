@@ -139,7 +139,7 @@ To verify the correct methodology was used to simulate `BCI` indices, hereunder 
 - put top three currencies from the candidate list into the final index
 - put additional two currencies from the candidate list into the final index such that currencies from the existing index ranked up to the 7th place take priority
 - normalize weights according to the market capitalization
-- cap allocation to 35% and renormalize (the step can be performed several times)
+- cap allocation to 35% and renormalize (the step can be performed multiple times)
 
 ### Parameters
 
