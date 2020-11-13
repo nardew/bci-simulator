@@ -19,100 +19,32 @@ Disclaimer: I am by no means affiliated with bitpanda (though I have been their 
 As already indicated, BCI5 and BCI10's performance depends on the parameters and timeframe used. While it performed well when bought prior to the 2017 bull run, it underperformes when entered later. There are several factors responsible for this, mainly strong correlation between BTC and other leading currencies and dilution of the few top performing coins due to rebalancing despite their price outperforming other assets.
 In the following paragraphs I provide performance of indices executed with different parameters and comparison with a diverse portfolio without rebalancing. Each simulation starts with $1000 and applies 2% fee. All values are shown without fees.  
 
-#### BCI5, 01/01/2015 - 03/11/2020
-
-| baseline closing value | index closing value | rebalancing fees |
-| --- | --- | --- |
-| $22,733.50 | $60,169.04 | $4,975.04 |
+| Index type | Start date | End date | Baseline closing value | Index closing value | Rebalancing fees |
+| --- | --- | --- | --- | --- | --- |
+| BCI5 | 01/01/2015 | 03/11/2020 | $22,733.50 | $60,169.04 | $4,975.04 |
+| BCI5 | 01/01/2016 | 03/11/2020 | $68,984.27 | $78,541.85 | $6,468.85 |
+| BCI5 | 01/01/2017 | 03/11/2020 | $27,187.41 | $31,187.39 | $2,538.08 |
+| BCI5 | 01/01/2018 | 03/11/2020 | $496.83 | $400.19 | $19.55 |
+| BCI5 | 01/01/2019 | 03/11/2020 | $2,411.43 | $2,215.78 | $51.35 |
+| BCI5 | 01/01/2020 | 03/11/2020 | $2,019.78 | $1,971.94 | $24.00 |
+| BCI10 | 01/01/2015 | 03/11/2020 | $23,195.13 | $47,634.00 | $4,464.40 |
+| BCI10 | 01/01/2016 | 03/11/2020 | $69,289.64 | $64,954.50 | $6,061.99 |
+| BCI10 | 01/01/2017 | 03/11/2020 | $24,496.33 | $27,106.29 | $2,496.05 |
+| BCI10 | 01/01/2018 | 03/11/2020 | $451.55 | $352.14 | $18.47 |
+| BCI10 | 01/01/2019 | 03/11/2020 | $2,292.90 | $2,111.58 | $47.83 |
+| BCI10 | 01/01/2020 | 03/11/2020 | $1,963.38 | $1,936.60 | $27.07 |
 
 ![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index5_2015-01-01_2020-11-03.svg)
-
-#### BCI5, 01/01/2016 - 03/11/2020
-
-| baseline closing value | index closing value | rebalancing fees |
-| --- | --- | --- |
-| $68,984.27 | $78,541.85 | $6,468.85 |
-
 ![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index5_2016-01-01_2020-11-03.svg)
-
-#### BCI5, 01/01/2017 - 03/11/2020
-
-| baseline closing value | index closing value | rebalancing fees |
-| --- | --- | --- |
-| $27,187.41 | $31,187.39 | $2,538.08 |
-
 ![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index5_2017-01-01_2020-11-03.svg)
-
-#### BCI5, 01/01/2018 - 03/11/2020
-
-| baseline closing value | index closing value | rebalancing fees |
-| --- | --- | --- |
-| $496.83 | $400.19 | $19.55 |
-
 ![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index5_2018-01-01_2020-11-03.svg)
-
-#### BCI5, 01/01/2019 - 03/11/2020
-
-| baseline closing value | index closing value | rebalancing fees |
-| --- | --- | --- |
-| $2,411.43 | $2,215.78 | $51.35 |
-
 ![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index5_2019-01-01_2020-11-03.svg)
-
-#### BCI5, 01/01/2020 - 03/11/2020
-
-| baseline closing value | index closing value | rebalancing fees |
-| --- | --- | --- |
-| $2,019.78 | $1,971.94 | $24.00 |
-
 ![BCI5](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index5_2020-01-01_2020-11-03.svg)
-
-#### BCI10, 01/01/2015 - 03/11/2020
-
-| baseline closing value | index closing value | rebalancing fees |
-| --- | --- | --- |
-| $23,195.13 | $47,634.00 | $4,464.40 |
-
 ![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index10_2015-01-01_2020-11-03.svg)
-
-#### BCI10, 01/01/2016 - 03/11/2020
-
-| baseline closing value | index closing value | rebalancing fees |
-| --- | --- | --- |
-| $69,289.64 | $64,954.50 | $6,061.99 |
-
 ![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index10_2016-01-01_2020-11-03.svg)
-
-#### BCI10, 01/01/2017 - 03/11/2020
-
-| baseline closing value | index closing value | rebalancing fees |
-| --- | --- | --- |
-| $24,496.33 | $27,106.29 | $2,496.05 |
-
 ![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index10_2017-01-01_2020-11-03.svg)
-
-#### BCI10, 01/01/2018 - 03/11/2020
-
-| baseline closing value | index closing value | rebalancing fees |
-| --- | --- | --- |
-| $451.55 | $352.14 | $18.47 |
-
 ![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index10_2018-01-01_2020-11-03.svg)
-
-#### BCI10, 01/01/2019 - 03/11/2020
-
-| baseline closing value | index closing value | rebalancing fees |
-| --- | --- | --- |
-| $2,292.90 | $2,111.58 | $47.83 |
-
 ![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index10_2019-01-01_2020-11-03.svg)
-
-#### BCI10, 01/01/2020 - 03/11/2020
-
-| baseline closing value | index closing value | rebalancing fees |
-| --- | --- | --- |
-| $1,963.38 | $1,936.60 | $27.07 |
-
 ![BCI10](https://raw.githubusercontent.com/nardew/bci-simulator/master/images/index10_2020-01-01_2020-11-03.svg)
 
 ### Example
