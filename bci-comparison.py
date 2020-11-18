@@ -32,11 +32,11 @@ if __name__ == "__main__":
     args = parse_args()
 
     indices = [args['index']]
-    rebalancings = [0, 10, 30, 60, 90, 180]
-    primary_volume_filters = [300000, 600000, 900000, 1200000, 1500000]
+    rebalancings = [0, 10, 60, 180]
+    primary_volume_filters = [300000, 600000, 1000000, 1500000]
     secondary_volume_filters = [600000, 1000000, 1500000, 2000000]
     max_allocations = [0.2, 0.3, 0.35, 0.45, 0.5]
-    running_avg_volume_periods = [10, 20, 30]
+    running_avg_volume_periods = [20, 30, 45]
     primary_candidates = [3, 5, 8, 15]
     offsets = [0, 3, 6, 9, 12, 15, 20, 30]
     start_dt = "2017-07-01"
@@ -63,9 +63,15 @@ if __name__ == "__main__":
         for rebalancing in rebalancings:
             for primary_volume_filter in primary_volume_filters:
                 for secondary_volume_filter in secondary_volume_filters:
+                    if primary_volume_filter >= secondary_volume_filter:
+                        continue
+
                     for max_allocation in max_allocations:
                         for running_avg_volume_period in running_avg_volume_periods:
                             for primary_candidate in primary_candidates:
+                                if primary_candidate > index:
+                                    continue
+
                                 for offset in offsets:
                                     LOG.info(f"Index: {index}, "
                                              f"rebalancing: {rebalancing}, "
@@ -123,7 +129,7 @@ if __name__ == "__main__":
 
     with open(f"results_{args['index']}_{start_dt}_{end_dt}.csv", 'w') as file:
         for data in results:
-            file.write(f"{';'.join(map(str, data[:8]))};{data[9]};{data[10]};{data[11]}\n")
+            file.write(f"{';'.join(map(str, data[:8]))};{data[9][-1]};{data[11][-1]};{data[10]}\n")
 
     dates = None
     for data in results[-10:]:
