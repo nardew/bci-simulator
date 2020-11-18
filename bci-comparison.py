@@ -11,8 +11,12 @@ logger = logging.getLogger('matplotlib')
 logger.setLevel(logging.WARN)
 logger.addHandler(logging.StreamHandler(sys.stdout))
 
+logger = logging.getLogger('BCI')
+logger.setLevel(logging.WARN)
+logger.addHandler(logging.StreamHandler(sys.stdout))
+
 logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler(sys.stdout))
 
 LOG = logging.getLogger(__name__)
@@ -58,6 +62,10 @@ if __name__ == "__main__":
     with open("input_data.json", 'r') as file:
         input_data = json.loads(file.read())
 
+    data = None
+    dates = None
+    data_by_coin = None
+
     results = []
     for index in indices:
         for rebalancing in rebalancings:
@@ -73,7 +81,7 @@ if __name__ == "__main__":
                                     continue
 
                                 for offset in offsets:
-                                    LOG.info(f"Index: {index}, "
+                                    LOG.debug(f"Index: {index}, "
                                              f"rebalancing: {rebalancing}, "
                                              f"primary_volume_filter: {primary_volume_filter}, "
                                              f"secondary_volume_filter: {secondary_volume_filter}, "
@@ -100,7 +108,13 @@ if __name__ == "__main__":
                                             end_dt = end_dt
                                         )
 
-                                        bci.set_input_data(input_data)
+                                        # use previously calculated data to save initialization time
+                                        if data_by_coin is None:
+                                            bci.set_input_data(input_data)
+                                        else:
+                                            bci.data = data
+                                            bci.dates = dates
+                                            bci.data_by_coin = data_by_coin
 
                                         [dates, baseline_values, index_values, fees] = bci.run()
                                         results.append([
@@ -113,6 +127,11 @@ if __name__ == "__main__":
                                             primary_candidate,
                                             offset,
                                             dates, index_values, fees, baseline_values])
+
+                                        if data_by_coin is None:
+                                            data = bci.data
+                                            dates = bci.dates
+                                            data_by_coin = bci.data_by_coin
                                     except Exception as e:
                                         LOG.info(e)
 

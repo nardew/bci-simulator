@@ -56,7 +56,7 @@ async def run():
             if STARTING_COIN is None or coin >= STARTING_COIN:
                 print(f"Downloading {coin} ({coin_id})")
 
-                # attempt to download data max 3 times (e.g. because of failures due to too many requests_
+                # attempt to download the data max. 3 times (e.g. because of failures due to too many requests)
                 for i in range(0, 3):
                     try:
                         data = cg.get_coin_market_chart_range_by_id(coin_id, 'usd', START_DT.timestamp(), END_DT.timestamp())
