@@ -161,7 +161,8 @@ If you want to try your own simulation with custom parameters, below description
 | `--input-file` | Path to a file with input historical data. |
 | `--start-date` | Starting date of the simulation. If not provided, the first date from the input data is used. |
 | `--end-date` | Ending date of the simulation. If not provided, the last date from the input data is used. |
-| `--graph` | Plot a graph at the end of simulation. |
+| `--show-graph` | Plot graph at the end of simulation. |
+| `--save-graph` | Save graph into the file. |
 
 ### Support
 

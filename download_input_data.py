@@ -3,16 +3,17 @@ from collections import defaultdict
 import asyncio
 import datetime
 import json
+import time
 
 from pycoingecko import CoinGeckoAPI
 from cryptoxlib.CryptoXLib import CryptoXLib
 
 # optionally choose the starting coin for the download. Use None if all coins are to be downloaded
-STARTING_COIN = 'OXT'
+STARTING_COIN = None
 
 # start and end date for the download
 START_DT = datetime.datetime(2015, 1, 1)
-END_DT = datetime.datetime(2020, 11, 5)
+END_DT = datetime.datetime(2020, 1, 1)
 
 
 async def run():
@@ -55,7 +56,18 @@ async def run():
             if STARTING_COIN is None or coin >= STARTING_COIN:
                 print(f"Downloading {coin} ({coin_id})")
 
-                data = cg.get_coin_market_chart_range_by_id(coin_id, 'usd', START_DT.timestamp(), END_DT.timestamp())
+                # attempt to download data max 3 times (e.g. because of failures due to too many requests_
+                for i in range(0, 3):
+                    try:
+                        data = cg.get_coin_market_chart_range_by_id(coin_id, 'usd', START_DT.timestamp(), END_DT.timestamp())
+                        break
+                    except Exception as e:
+                        if i == 2:
+                            raise e
+                        else:
+                            print(e)
+                            print(f"Retrying after 30sec")
+                            time.sleep(30)
 
                 for (price, cap, volume) in reversed(list(zip(data['prices'], data['market_caps'], data['total_volumes']))):
                     date = datetime.datetime.fromtimestamp(price[0] / 1000).strftime("%Y-%m-%d")
