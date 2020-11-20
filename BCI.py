@@ -283,7 +283,7 @@ class BCI(object):
         LOG.debug(f"\tCapped percentage allocation:")
         LOG.debug("\n".join(map(lambda x: f"\t\t{x}", perc_cap)))
 
-        # split funds among top coins according to the percentage distribution (ignore assets with 0 qty)
+        # split funds among top coins according to the percentage distribution (ignore assets with 0 price)
         self.portfolio = {coin[0]: (funds * coin[1] / self.data[self.dates[0]][coin[0]]['price']) if self.data[self.dates[0]][coin[0]]['price'] != 0 else 0 for coin in perc_cap}
         LOG.info(f"Portfolio allocation: {self.portfolio}")
 

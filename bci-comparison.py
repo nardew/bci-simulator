@@ -12,7 +12,7 @@ logger.setLevel(logging.WARN)
 logger.addHandler(logging.StreamHandler(sys.stdout))
 
 logger = logging.getLogger('BCI')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.WARN)
 logger.addHandler(logging.StreamHandler(sys.stdout))
 
 logger = logging.getLogger()
@@ -49,19 +49,6 @@ if __name__ == "__main__":
     offsets = [0, 3, 6, 9, 12, 15, 20, 30]
     start_dt = "2017-07-01"
     end_dt = "2018-07-01"
-
-    """
-    indices = [4, 5]
-    rebalancings = [0, 10]
-    primary_volume_filters = [300000, 600000]
-    secondary_volume_filters = [600000, 1000000]
-    max_allocations = [0.3]
-    running_avg_volume_periods = [10]
-    primary_candidates = [3]
-    offsets = [0]
-    start_dt = "2017-07-01"
-    end_dt = "2018-07-01"
-    """
 
     with open("input_data.json", 'r') as file:
         input_data = json.loads(file.read())
