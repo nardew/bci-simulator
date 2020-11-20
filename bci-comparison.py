@@ -12,11 +12,11 @@ logger.setLevel(logging.WARN)
 logger.addHandler(logging.StreamHandler(sys.stdout))
 
 logger = logging.getLogger('BCI')
-logger.setLevel(logging.WARN)
+logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.StreamHandler(sys.stdout))
 
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.WARN)
 logger.addHandler(logging.StreamHandler(sys.stdout))
 
 LOG = logging.getLogger(__name__)
@@ -40,7 +40,7 @@ if __name__ == "__main__":
     primary_volume_filters = [300000, 600000, 1000000, 1500000]
     secondary_volume_filters = [600000, 1000000, 1500000, 2000000]
     max_allocations = [0.2, 0.3, 0.35, 0.45, 0.5]
-    running_avg_volume_periods = [20, 30, 45]
+    running_avg_volume_periods = [20, 30]
     primary_candidates = [3, 5, 8, 15]
     offsets = [0, 3, 6, 9, 12, 15, 20, 30]
     start_dt = "2017-07-01"
@@ -133,7 +133,7 @@ if __name__ == "__main__":
                                             dates = bci.dates
                                             data_by_coin = bci.data_by_coin
                                     except Exception as e:
-                                        LOG.info(e)
+                                        LOG.debug(e)
 
     LOG.info(f"Best performing index configurations:")
     for data in sorted(results, key = lambda x: x[9][-1], reverse = True):

@@ -21,6 +21,7 @@ class BCI(object):
                  secondary_candidate_size: int,
                  initial_funds: float,
                  offset: int,
+                 bypass_validation: bool = False,
                  input_file_name: str = None,
                  start_dt: str = None,
                  end_dt: str = None,
@@ -38,6 +39,7 @@ class BCI(object):
         self.secondary_candidate_size = secondary_candidate_size
         self.initial_funds = initial_funds
         self.offset = offset
+        self.bypass_validation = bypass_validation
         self.show_graph = show_graph
         self.save_graph = save_graph
         self.start_dt = start_dt
@@ -67,9 +69,25 @@ class BCI(object):
                   f"\tsecondary candidate size: {secondary_candidate_size}\n"
                   f"\tinitial funds: {initial_funds}\n"
                   f"\toffset: {offset}\n"
+                  f"\tbypass validation: {bypass_validation}\n"
                   f"\tstart date: {start_dt}\n"
                   f"\tend date: {end_dt}\n"
                   f"\tinput filename: {input_file_name}")
+
+        if self.bypass_validation is False:
+            self.validate()
+
+    def validate(self):
+        if self.index_candidate_size < self.index_size:
+            raise Exception(f"Index candidate size [{self.index_candidate_size}] cannot be less than index size [{self.index_size}]")
+
+        if self.primary_candidate_size > self.index_size:
+            raise Exception(
+                f"Primary candidate size [{self.primary_candidate_size}] cannot be greater than index size [{self.index_size}]")
+
+        if self.secondary_candidate_size < self.primary_candidate_size:
+            raise Exception(
+                f"Secondary candidate size [{self.secondary_candidate_size}] cannot be greater than primary candidate size [{self.primary_candidate_size}]")
 
     def set_input_data(self, input_data):
         self.data = dict(input_data)
@@ -183,7 +201,7 @@ class BCI(object):
                     if coin in self.portfolio.keys() and len(final_coins) < self.index_size:
                         final_coins.append(coin)
 
-                # add remaning coins to reach the index size
+                # add remaining coins to reach the index size
                 for coin in candidate_coins[:self.index_candidate_size]:
                     if coin not in final_coins and len(final_coins) < self.index_size:
                         final_coins.append(coin)
@@ -201,7 +219,7 @@ class BCI(object):
                 # calculate USD value of the current portfolio and then distribute it into the new portfolio
                 # based on the calculated percentage
                 portfolio_sum = sum([qty * self.data[date][coin]['price'] for coin, qty in self.portfolio.items()])
-                new_portfolio = {coin[0]: portfolio_sum * coin[1] / self.data[date][coin[0]]['price'] for coin in perc_allocation}
+                new_portfolio = {coin[0]: (portfolio_sum * coin[1] / self.data[date][coin[0]]['price']) if self.data[date][coin[0]]['price'] != 0 else 0 for coin in perc_allocation}
 
                 LOG.info(f"\tNew portfolio allocation: {new_portfolio}")
                 new_portfolio_usd = {coin: qty * self.data[date][coin]['price'] for coin, qty in new_portfolio.items()}
@@ -265,8 +283,8 @@ class BCI(object):
         LOG.debug(f"\tCapped percentage allocation:")
         LOG.debug("\n".join(map(lambda x: f"\t\t{x}", perc_cap)))
 
-        # split funds among top coins according to the percentage distribution
-        self.portfolio = {coin[0]: funds * coin[1] / self.data[self.dates[0]][coin[0]]['price'] for coin in perc_cap}
+        # split funds among top coins according to the percentage distribution (ignore assets with 0 qty)
+        self.portfolio = {coin[0]: (funds * coin[1] / self.data[self.dates[0]][coin[0]]['price']) if self.data[self.dates[0]][coin[0]]['price'] != 0 else 0 for coin in perc_cap}
         LOG.info(f"Portfolio allocation: {self.portfolio}")
 
         new_portfolio_usd = {coin: qty * self.data[self.dates[0]][coin]['price'] for coin, qty in self.portfolio.items()}
@@ -290,7 +308,7 @@ class BCI(object):
                 perc_cap[i][1] = max_allocation
 
                 s = sum(coin[1] for coin in perc_cap[i + 1:])
-                perc_cap[i + 1:] = map(lambda x: [x[0], x[1] + surplus / (s / x[1])], perc_cap[i + 1:])
+                perc_cap[i + 1:] = map(lambda x: [x[0], x[1] + surplus * (x[1] / s)], perc_cap[i + 1:])
             else:
                 break
 

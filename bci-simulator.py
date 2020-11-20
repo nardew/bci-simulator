@@ -30,6 +30,7 @@ def parse_args() -> dict:
     parser.add_argument('--secondary-candidates', help = 'Secondary candidates size', default = 7, type = int)
     parser.add_argument('--funds', help = 'Initial funds', default = 1000, type = float)
     parser.add_argument('--offset', help = 'Offset to consider top performing currencies', default = 0, type = int)
+    parser.add_argument('--bypass-validation', help = 'Bypass validation of input parameters', action = 'store_true', default = False)
     parser.add_argument('--input-file', help = 'JSON file with the input data', default = "./input_data.json")
     parser.add_argument('--start-date', help = 'Start date in YYYY-MM-DD format. None for all dates', default = None)
     parser.add_argument('--end-date', help = 'End date in YYYY-MM-DD format. None for all dates', default = None)
@@ -57,6 +58,7 @@ if __name__ == "__main__":
         secondary_candidate_size = args['secondary_candidates'],
         initial_funds = args['funds'],
         offset = args['offset'],
+        bypass_validation = args['bypass_validation'],
         input_file_name = args['input_file'],
         start_dt = args['start_date'],
         end_dt = args['end_date'],
