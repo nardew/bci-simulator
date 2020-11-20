@@ -20,10 +20,13 @@ class BCI(object):
                  primary_candidate_size: int,
                  secondary_candidate_size: int,
                  initial_funds: float,
-                 input_file_name: str,
+                 offset: int,
+                 bypass_validation: bool = False,
+                 input_file_name: str = None,
                  start_dt: str = None,
                  end_dt: str = None,
-                 graph: bool = False):
+                 show_graph: bool = False,
+                 save_graph: bool = False):
         self.index_size = index_size
         self.rebalancing_period = rebalancing_period
         self.primary_usd_filtering = primary_usd_filtering
@@ -35,23 +38,23 @@ class BCI(object):
         self.primary_candidate_size = primary_candidate_size
         self.secondary_candidate_size = secondary_candidate_size
         self.initial_funds = initial_funds
-        self.graph = graph
+        self.offset = offset
+        self.bypass_validation = bypass_validation
+        self.show_graph = show_graph
+        self.save_graph = save_graph
+        self.start_dt = start_dt
+        self.end_dt = end_dt
 
         self.portfolio: Dict = {}
         self.orig_portfolio: Dict = {}
         self.overall_fee: float = 0
 
-        with open(input_file_name, 'r') as file:
-            self.data = json.loads(file.read())
-
-        self.dates = sorted(self.data.keys())
-
-        self.data_by_coin = {}
-        self.calc_data_by_coin()
-
-        self.calc_running_avg_volume()
-
-        self.prune_dates(start_dt, end_dt)
+        self.data = None
+        self.dates = None
+        self.data_by_coin = None
+        if input_file_name is not None:
+            with open(input_file_name, 'r') as file:
+                self.set_input_data(json.loads(file.read()))
 
         LOG.debug(f"\nConfiguration:\n"
                   f"\tindex size: {index_size}\n"
@@ -65,9 +68,38 @@ class BCI(object):
                   f"\tprimary candidate size: {primary_candidate_size}\n"
                   f"\tsecondary candidate size: {secondary_candidate_size}\n"
                   f"\tinitial funds: {initial_funds}\n"
+                  f"\toffset: {offset}\n"
+                  f"\tbypass validation: {bypass_validation}\n"
                   f"\tstart date: {start_dt}\n"
                   f"\tend date: {end_dt}\n"
                   f"\tinput filename: {input_file_name}")
+
+        if self.bypass_validation is False:
+            self.validate()
+
+    def validate(self):
+        if self.index_candidate_size < self.index_size:
+            raise Exception(f"Index candidate size [{self.index_candidate_size}] cannot be less than index size [{self.index_size}]")
+
+        if self.primary_candidate_size > self.index_size:
+            raise Exception(
+                f"Primary candidate size [{self.primary_candidate_size}] cannot be greater than index size [{self.index_size}]")
+
+        if self.secondary_candidate_size < self.primary_candidate_size:
+            raise Exception(
+                f"Secondary candidate size [{self.secondary_candidate_size}] cannot be greater than primary candidate size [{self.primary_candidate_size}]")
+
+    def set_input_data(self, input_data):
+        self.data = dict(input_data)
+
+        self.dates = sorted(self.data.keys())
+
+        self.data_by_coin = {}
+        self.calc_data_by_coin()
+
+        self.calc_running_avg_volume()
+
+        self.prune_dates(self.start_dt, self.end_dt)
 
     # remove dates outside the selected window
     def prune_dates(self, start_dt: str = None, end_dt: str = None):
@@ -138,7 +170,7 @@ class BCI(object):
                 # filter out all other coins with average daily volume less than self.secondary_usd_filtering over the current month
                 LOG.debug(f"\tSecondary filtering:")
                 ranking = sorted(self.data[date].items(), key = lambda x: x[1]['cap'], reverse = True)
-                for rank in ranking[:self.index_candidate_size]:
+                for rank in ranking[self.offset:self.offset + self.index_candidate_size]:
                     if rank[0] not in candidate_coins:
                         LOG.debug(f"\t\t{rank[0]}: value $: {rank[1]['volume_avg'] * rank[1]['price']:,} (average volume: {rank[1]['volume_avg']}, price: {rank[1]['price']})")
                         if rank[1]['volume_avg'] * rank[1]['price'] > self.secondary_usd_filtering:
@@ -151,7 +183,7 @@ class BCI(object):
 
                 # if filtering leads to having not enough coins, then add even the ones not meeting volume criteria
                 if len(candidate_coins) < self.index_candidate_size:
-                    candidate_coins += [rank[0] for rank in ranking[:self.index_candidate_size]]
+                    candidate_coins += [rank[0] for rank in ranking[self.offset:self.offset + self.index_candidate_size]]
                     candidate_coins = list(set(candidate_coins))
                     LOG.info(f"\tNot enough candidates, adding additional ones despite not meeting volume criteria: {candidate_coins}")
 
@@ -169,7 +201,7 @@ class BCI(object):
                     if coin in self.portfolio.keys() and len(final_coins) < self.index_size:
                         final_coins.append(coin)
 
-                # add remaning coins to reach the index size
+                # add remaining coins to reach the index size
                 for coin in candidate_coins[:self.index_candidate_size]:
                     if coin not in final_coins and len(final_coins) < self.index_size:
                         final_coins.append(coin)
@@ -187,7 +219,7 @@ class BCI(object):
                 # calculate USD value of the current portfolio and then distribute it into the new portfolio
                 # based on the calculated percentage
                 portfolio_sum = sum([qty * self.data[date][coin]['price'] for coin, qty in self.portfolio.items()])
-                new_portfolio = {coin[0]: portfolio_sum * coin[1] / self.data[date][coin[0]]['price'] for coin in perc_allocation}
+                new_portfolio = {coin[0]: (portfolio_sum * coin[1] / self.data[date][coin[0]]['price']) if self.data[date][coin[0]]['price'] != 0 else 0 for coin in perc_allocation}
 
                 LOG.info(f"\tNew portfolio allocation: {new_portfolio}")
                 new_portfolio_usd = {coin: qty * self.data[date][coin]['price'] for coin, qty in new_portfolio.items()}
@@ -229,15 +261,18 @@ class BCI(object):
         LOG.info(f"Index portfolio value: {value_index[-1]:,}")
         LOG.info(f"Fees: {self.overall_fee:,}")
 
-        if self.graph is True:
+        if self.show_graph is True or self.save_graph is True:
             self.plot_graph(value_baseline, value_index, graph_x_dates)
+
+        return [self.dates, value_baseline, value_index, self.overall_fee]
 
     def init_portfolio(self, funds: float):
         LOG.debug(f"\nInitializing portfolio for ${funds}...")
 
-        # sort all currencies by their market capitalization and pick first N ones based on the index size
+        # sort all currencies by their market capitalization and pick first N ones based on the index size (considering
+        # optional offset)
         ranking = sorted(self.data[self.dates[0]].items(), key = lambda x: x[1]['cap'], reverse = True)
-        ranking = ranking[:self.index_size]
+        ranking = ranking[self.offset:self.offset + self.index_size]
 
         LOG.debug(f"\tTop {self.index_size} assets:")
         LOG.debug("\n".join(map(lambda x: f"\t\t{x}", ranking)))
@@ -248,8 +283,8 @@ class BCI(object):
         LOG.debug(f"\tCapped percentage allocation:")
         LOG.debug("\n".join(map(lambda x: f"\t\t{x}", perc_cap)))
 
-        # split funds among top coins according to the percentage distribution
-        self.portfolio = {coin[0]: funds * coin[1] / self.data[self.dates[0]][coin[0]]['price'] for coin in perc_cap}
+        # split funds among top coins according to the percentage distribution (ignore assets with 0 price)
+        self.portfolio = {coin[0]: (funds * coin[1] / self.data[self.dates[0]][coin[0]]['price']) if self.data[self.dates[0]][coin[0]]['price'] != 0 else 0 for coin in perc_cap}
         LOG.info(f"Portfolio allocation: {self.portfolio}")
 
         new_portfolio_usd = {coin: qty * self.data[self.dates[0]][coin]['price'] for coin, qty in self.portfolio.items()}
@@ -273,7 +308,7 @@ class BCI(object):
                 perc_cap[i][1] = max_allocation
 
                 s = sum(coin[1] for coin in perc_cap[i + 1:])
-                perc_cap[i + 1:] = map(lambda x: [x[0], x[1] + surplus / (s / x[1])], perc_cap[i + 1:])
+                perc_cap[i + 1:] = map(lambda x: [x[0], x[1] + surplus * (x[1] / s)], perc_cap[i + 1:])
             else:
                 break
 
@@ -293,5 +328,9 @@ class BCI(object):
         plt.grid(linestyle = '--', linewidth = 0.5)
 
         plt.legend()
-        plt.savefig(f"index{self.index_size}_{self.dates[0]}_{self.dates[-1]}.svg", format = "svg")
-        plt.show()
+
+        if self.save_graph is True:
+            plt.savefig(f"index{self.index_size}_{self.dates[0]}_{self.dates[-1]}.svg", format = "svg")
+
+        if self.show_graph is True:
+            plt.show()

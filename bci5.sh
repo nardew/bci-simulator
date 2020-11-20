@@ -12,5 +12,7 @@ python bci-simulator.py \
 --primary-candidates 3 \
 --secondary-candidates 7 \
 --funds 1000 \
+--offset 0 \
 --input-file "input_data.json" \
---start-date "2020-01-01" \
+--start-date "2016-01-01" \
+--end-date "2020-11-01"
