@@ -21,6 +21,10 @@ logger.addHandler(logging.StreamHandler(sys.stdout))
 
 LOG = logging.getLogger(__name__)
 
+GRAPH = False
+EXPORT_CSV_RESULTS = True
+EXPORT_FULL_RESULTS = False
+
 
 def parse_args() -> dict:
     parser = argparse.ArgumentParser(description='Bitpanda Crypto Index Simulator')
@@ -143,30 +147,32 @@ if __name__ == "__main__":
     for data in sorted(results, key = lambda x: x[11][-1], reverse = True):
         LOG.info(f"{data[:8]}:{data[9][-1]:.2f}:{data[11][-1]:.2f}:{data[10]:.2f}")
 
-    with open(f"results_{args['index']}_{start_dt}_{end_dt}.json", 'w') as file:
-        file.write(json.dumps(results))
+    if EXPORT_FULL_RESULTS is True:
+        with open(f"results_{args['index']}_{start_dt}_{end_dt}.json", 'w') as file:
+            file.write(json.dumps(results))
 
-    with open(f"results_{args['index']}_{start_dt}_{end_dt}.csv", 'w') as file:
-        for data in results:
-            file.write(f"{';'.join(map(str, data[:8]))};{data[9][-1]};{data[11][-1]};{data[10]}\n")
+    if EXPORT_CSV_RESULTS is True:
+        with open(f"results_{args['index']}_{start_dt}_{end_dt}.csv", 'w') as file:
+            for data in results:
+                file.write(f"{';'.join(map(str, data[:8]))};{data[9][-1]};{data[11][-1]};{data[10]}\n")
 
-    dates = None
-    for data in results[-10:]:
-        dates = data[8]
-        plt.plot(data[8], data[9], label = str(data[:8]), linewidth = 0.7)
+    if GRAPH is True:
+        dates = None
+        for data in results[-10:]:
+            dates = data[8]
+            plt.plot(data[8], data[9], label = str(data[:8]), linewidth = 0.7)
 
-    plt.xlabel('Date')
-    plt.xticks(list(filter(lambda x: x.split('-')[2] == '01' and int(x.split('-')[1]) % 3 == 0, dates)), rotation = 45, fontsize = 6)
+        plt.xlabel('Date')
+        plt.xticks(list(filter(lambda x: x.split('-')[2] == '01' and int(x.split('-')[1]) % 3 == 0, dates)), rotation = 45, fontsize = 6)
 
-    plt.ylabel('Value (USD)')
+        plt.ylabel('Value (USD)')
 
-    plt.title(f'BCI {start_dt} - {end_dt}')
+        plt.title(f'BCI {start_dt} - {end_dt}')
 
-    plt.grid(linestyle = '--', linewidth = 0.5)
+        plt.grid(linestyle = '--', linewidth = 0.5)
 
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
-          fancybox=True, shadow=True, ncol=5)
+        plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
+              fancybox=True, shadow=True, ncol=5)
 
-    plt.savefig(f"index_comparison_{args['index']}_{start_dt}_{end_dt}.svg", format = "svg")
-
-    #plt.show()
+        plt.savefig(f"index_comparison_{args['index']}_{start_dt}_{end_dt}.svg", format = "svg")
+        #plt.show()
