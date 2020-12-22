@@ -89,6 +89,10 @@ class BCI(object):
             raise Exception(
                 f"Secondary candidate size [{self.secondary_candidate_size}] cannot be greater than primary candidate size [{self.primary_candidate_size}]")
 
+        if self.index_size * self.max_asset_allocation < 1:
+            raise Exception(
+                f"Max allocation [{self.max_asset_allocation}] * index size [{self.index_size}] cannot be less than 1.")
+
     def set_input_data(self, input_data):
         self.data = dict(input_data)
 
