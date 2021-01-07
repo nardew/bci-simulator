@@ -15,15 +15,17 @@ logger = logging.getLogger('BCI')
 logger.setLevel(logging.WARN)
 logger.addHandler(logging.StreamHandler(sys.stdout))
 
-logger = logging.getLogger()
-logger.setLevel(logging.WARN)
+logger = logging.getLogger('__main__')
+logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler(sys.stdout))
 
 LOG = logging.getLogger(__name__)
 
 GRAPH = False
-EXPORT_CSV_RESULTS = True
+EXPORT_CSV_RESULTS = False
 EXPORT_FULL_RESULTS = False
+
+FEE = 0.001
 
 
 def parse_args() -> dict:
@@ -35,22 +37,31 @@ def parse_args() -> dict:
 
 
 if __name__ == "__main__":
-    LOG.info("BCI Comparison")
-
     args = parse_args()
 
     indices = [args['index']]
-    rebalancings = [0, 10, 60, 180]
-    primary_volume_filters = [300000, 600000, 1000000, 1500000]
-    secondary_volume_filters = [600000, 1000000, 1500000, 2000000]
+    rebalancings = [0, 60]
+    primary_volume_filters = [600000, 1000000, 1500000]
+    secondary_volume_filters = [1000000, 1500000, 2000000]
     max_allocations = [0.2, 0.3, 0.35, 0.45, 0.5]
-    running_avg_volume_periods = [20, 30]
+    running_avg_volume_periods = [30]
     primary_candidates = [3, 5, 8, 15]
     offsets = [0, 3, 6, 9, 12, 15, 20, 30]
     start_dt = "2017-07-01"
-    end_dt = "2018-07-01"
+    end_dt = "2020-11-01"
 
-    with open("input_data.json", 'r') as file:
+    #indices = [10]
+    #rebalancings = [0]
+    #primary_volume_filters = [300000]
+    #secondary_volume_filters = [1000000]
+    #max_allocations = [0.5]
+    #running_avg_volume_periods = [30]
+    #primary_candidates = [3]
+    #offsets = [35]
+    #start_dt = "2018-06-01"
+    #end_dt = "2020-11-01"
+
+    with open("input_data_160101_201231.json", 'r') as file:
         input_data = json.loads(file.read())
 
     data = None
@@ -88,7 +99,7 @@ if __name__ == "__main__":
                                             primary_usd_filtering = primary_volume_filter,
                                             secondary_usd_filtering = secondary_volume_filter,
                                             max_asset_allocation = max_allocation,
-                                            fee = 0.02,
+                                            fee = FEE,
                                             running_avg_volume_period = running_avg_volume_period,
                                             index_candidate_size = index * 2,
                                             primary_candidate_size = min(primary_candidate, index),
@@ -127,12 +138,12 @@ if __name__ == "__main__":
                                         LOG.debug(e)
 
     LOG.info(f"Best performing index configurations:")
-    for data in sorted(results, key = lambda x: x[9][-1], reverse = True):
-        LOG.info(f"{data[:8]}:{data[9][-1]:.2f}:{data[11][-1]:.2f}:{data[10]:.2f}")
+    for data in sorted(results, key = lambda x: x[9][-1]-x[10], reverse = True):
+        LOG.info(f"{start_dt}:{end_dt}:{data[:8]}:{data[9][-1]:,.2f}:{data[11][-1]:,.2f}:{data[10]:,.2f}:{data[9][-1]-data[10]:,.2f}:{max(data[9])-data[10]:,.2f}")
 
-    LOG.info(f"Best performing baseline configurations:")
-    for data in sorted(results, key = lambda x: x[11][-1], reverse = True):
-        LOG.info(f"{data[:8]}:{data[9][-1]:.2f}:{data[11][-1]:.2f}:{data[10]:.2f}")
+    #LOG.info(f"Best performing baseline configurations:")
+    #for data in sorted(results, key = lambda x: x[11][-1], reverse = True):
+    #    LOG.info(f"{data[:8]}:{data[9][-1]:.2f}:{data[11][-1]:.2f}:{data[10]:.2f}")
 
     if EXPORT_FULL_RESULTS is True:
         with open(f"results_{args['index']}_{start_dt}_{end_dt}.json", 'w') as file:
